@@ -1,0 +1,20 @@
+name: ArcherPraise
+version: ${project.version}
+main: me.xemor.archerpraise.ArcherPraise
+api-version: 1.13
+authors: [Xemor_]
+description: Announces globally whenever a player lands a hit over X distance.
+website: mc.enchanted-skies.net
+commands:
+  archerpraise:
+    description: The root command of the ArcherPraise plugin
+    usage: /archerpraise <subcommand, only implemented subcommand is reload so far>
+permissions:
+  archerpraise.*:
+    description: gives access to all archerpraise permissions
+    children:
+      archerpraise.reload: true
+  archerpraise.reload:
+    description: gives access to reload the archerpraise plugin
+    default: false
+
