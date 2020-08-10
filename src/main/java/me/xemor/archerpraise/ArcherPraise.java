@@ -22,6 +22,8 @@ public final class ArcherPraise extends JavaPlugin implements Listener {
 
     private static String message;
     private static int distanceThreshold;
+    private static int cooldown;
+    private CooldownHandler cooldownHandler = new CooldownHandler("");
     private static boolean notifyAll;
     private static List<String> commands;
 
@@ -43,6 +45,7 @@ public final class ArcherPraise extends JavaPlugin implements Listener {
         distanceThreshold = config.getInt("distanceThreshold");
         notifyAll = config.getBoolean("notifyAll");
         commands = config.getStringList("commandsToRun");
+        cooldown = config.getInt("cooldown");
     }
 
     @Override
@@ -56,17 +59,20 @@ public final class ArcherPraise extends JavaPlugin implements Listener {
             Arrow arrow = (Arrow) e.getDamager();
             if (arrow.getShooter() instanceof Player) {
                 Player player = (Player) arrow.getShooter();
-                int distance = (int) getLocationShotFrom(arrow).distance(e.getEntity().getLocation());
-                if (distance >= distanceThreshold) {
-                    String tempMessage = message.replaceAll("%player%", player.getName());
-                    tempMessage = tempMessage.replaceAll("%distance%", String.valueOf(distance));
-                    if (notifyAll) {
-                        Bukkit.broadcastMessage(tempMessage);
+                if (cooldownHandler.isCooldownOver(player.getUniqueId())) {
+                    int distance = (int) getLocationShotFrom(arrow).distance(e.getEntity().getLocation());
+                    if (distance >= distanceThreshold) {
+                        String tempMessage = message.replaceAll("%player%", player.getName());
+                        tempMessage = tempMessage.replaceAll("%distance%", String.valueOf(distance));
+                        if (notifyAll) {
+                            Bukkit.broadcastMessage(tempMessage);
+                        }
+                        else {
+                            player.sendMessage(tempMessage);
+                        }
+                        executeCommands(player);
+                        cooldownHandler.startCooldown(cooldown, player.getUniqueId());
                     }
-                    else {
-                        player.sendMessage(tempMessage);
-                    }
-                    executeCommands(player);
                 }
             }
         }

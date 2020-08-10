@@ -1,5 +1,6 @@
 message: "&7&l%player% has hit a bow shot from %distance% blocks away!"
 distanceThreshold: 50
 notifyAll: true
+cooldown: 3
 commandsToRun:
   - "eco give %player% 100"
